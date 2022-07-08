@@ -723,7 +723,7 @@ SYSIO_INTERFACE_NAME(pwrite64v)(int fd,
 
 ssize_t
 SYSIO_INTERFACE_NAME(preadv)(int fd,
-			     const struct iovec *iov, size_t count,
+			     const struct iovec *iov, int count,
 			     off_t offset)
 {
 
@@ -732,7 +732,7 @@ SYSIO_INTERFACE_NAME(preadv)(int fd,
 
 ssize_t
 SYSIO_INTERFACE_NAME(pwritev)(int fd,
-			      const struct iovec *iov, size_t count,
+			      const struct iovec *iov, int count,
 			      off_t offset)
 {
 

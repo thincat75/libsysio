@@ -103,7 +103,7 @@ int
 _SCANDIR(const char *dirname, 
 	 _DIRENT_T ***namelist, 
 	 int (*filter) (const _DIRENT_T *), 
-	 int (*compar) (const void *, const void *))
+	 int (*compar) (const _DIRENT_T **, const _DIRENT_T **))
 {
 	DIR *dir = NULL;
 	_DIRENT_T *de 	  = NULL,

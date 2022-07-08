@@ -41,9 +41,12 @@
  * lee@sandia.gov
  */
 
+#define _GNU_SOURCE
+/* never used
 #ifdef __linux__
 #define _BSD_SOURCE
 #endif
+*/
 
 #include <stdio.h>					/* for NULL */
 #include <stdlib.h>

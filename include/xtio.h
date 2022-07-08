@@ -139,7 +139,7 @@ extern ioid_t SYSIO_INTERFACE_NAME(ipread64)(int fd,
  */
 extern ssize_t SYSIO_INTERFACE_NAME(preadv)(int fd,
 					    const struct iovec *iov,
-					    size_t count,
+					    int count,
 					    off_t offset);
 
 #ifdef _LARGEFILE64_SOURCE
@@ -258,7 +258,7 @@ extern ioid_t SYSIO_INTERFACE_NAME(ipwrite64)(int fd,
  */
 extern ssize_t SYSIO_INTERFACE_NAME(pwritev)(int fd,
 					     const struct iovec *iov,
-					     size_t count,
+					     int count,
 					     off_t offset);
 
 #ifdef _LARGEFILE64_SOURCE

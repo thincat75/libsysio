@@ -280,8 +280,8 @@ extern struct dirent *SYSIO_INTERFACE_NAME(readdir)(DIR *dir);
 extern int SYSIO_INTERFACE_NAME(scandir)(const char *dir,
 					 struct dirent ***namelist,
 					 int(*filter)(const struct dirent *),
-					 int(*compar)(const void *,
-						      const void *));
+					 int(*compar)(const dirent **,
+						      const dirent **));
 #if defined(_BSD_SOURCE) || defined(_SVID_SOURCE)
 extern ssize_t SYSIO_INTERFACE_NAME(getdirentries)(int fd,
 						   char *buf,
