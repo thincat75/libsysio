@@ -889,6 +889,7 @@ SYSIO_INTERFACE_NAME(pwrite)(int fd,
 			     off_t offset)
 {
 
+	CURVEFS_DPRINTF("coming into the prwite\n");
 	return _do_pio(fd, _do_iwritex, (void *)buf, count, offset);
 }
 

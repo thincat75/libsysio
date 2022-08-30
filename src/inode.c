@@ -522,7 +522,7 @@ _sysio_pb_new(struct qstr *name, struct pnode_base *parent, struct inode *ino)
 		p_reclaim(n);
 	}
 
-	pb = malloc(sizeof(struct pnode_base) + name->len);
+	pb = malloc(sizeof(struct pnode_base) + name->len + 1);
 	if (!pb)
 		return NULL;
 
@@ -561,6 +561,7 @@ _sysio_pb_new(struct qstr *name, struct pnode_base *parent, struct inode *ino)
 		cp = (char *)pb + sizeof(struct pnode_base);
 		(void )strncpy(cp, name->name, name->len);
 		pb->pb_key.pbk_name.name = cp;
+		*(cp + name->len) = 0; /* just set the string end to zero */
 		ncache_insert(pb);
 	}
 #ifdef PB_DEBUG
@@ -933,6 +934,7 @@ _sysio_p_validate(struct pnode *pno, struct intent *intnt, const char *path)
 			 */
 			PB_SET_ASSOC(pno->p_base, ino);
 		} else if (pno->p_base->pb_ino != ino) {
+			CURVEFS_DPRINTF("_sysio_p_validate in another branch pb_ino=%p ino=%p\n", pno->p_base->pb_ino, ino);
 			/*
 			 * Path resolves to a different inode, now. The
 			 * currently attached inode, then, is stale.
@@ -992,6 +994,7 @@ _sysio_p_find_alias(struct pnode *parent,
 		 * None found, create new child.
 		 */
 		pb = _sysio_pb_new(name, parent->p_base, NULL);
+		CURVEFS_DPRINTF("_sysio_p_find_alias pb=%p inode=%p\n", pb, pb->pb_ino);
 		if (!pb)
 			return -ENOMEM;
 	}
@@ -1019,6 +1022,7 @@ _sysio_p_find_alias(struct pnode *parent,
 		 * Hmm. No alias. Create one.
 		 */
 		pno = _sysio_p_new_alias(parent, pb, parent->p_mount);
+		CURVEFS_DPRINTF("_sysio_p_find_alias pno=%p pb=%p inode=%p\n", pno, pno->p_base, pno->p_base->pb_ino);
 		if (!pno)
 			err = -ENOMEM;
 	}
@@ -1322,6 +1326,8 @@ _sysio_p_setattr(struct pnode *pno,
 		 unsigned mask,
 		 struct intnl_stat *stbuf)
 {
+
+	CURVEFS_DPRINTF("comeing into the _sysio_p_setattr readonly=%d\n", IS_RDONLY(pno));
 
 	if (IS_RDONLY(pno))
 		return -EROFS;

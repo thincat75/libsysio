@@ -67,6 +67,8 @@ do_truncate(struct pnode *pno, _SYSIO_OFF_T length)
 	struct intnl_stat stbuf;
 	unsigned mask;
 
+	CURVEFS_DPRINTF("do_truncate mode=%d, isdir=%d, isreg=%d\n", pno->p_base->pb_ino->i_stbuf.st_mode, S_ISDIR(pno->p_base->pb_ino->i_stbuf.st_mode), 
+		S_ISREG(pno->p_base->pb_ino->i_stbuf.st_mode));
 	if (length < 0)
 		return -EINVAL;
 
@@ -128,12 +130,16 @@ PREPEND(_, SYSIO_INTERFACE_NAME(ftruncate))(int fd, _SYSIO_OFF_T length)
 	SYSIO_INTERFACE_DISPLAY_BLOCK;
 
 	SYSIO_INTERFACE_ENTER(ftruncate, "%d%oZ", fd, length);
+
+	CURVEFS_DPRINTF("comeing into the ftruncate fd=%d length=%ld\n", fd, length);
+
 	err = 0;
 	fil = _sysio_fd_find(fd);
 	if (!(fil && FIL_CHKRW(fil, 'w'))) {
 		err = -EBADF;
 		goto out;
 	}
+	CURVEFS_DPRINTF("ftruncate the fil=%p\n", fil);
 	err = do_truncate(fil->f_pno, length);
 out:
 	if (fil)

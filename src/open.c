@@ -166,6 +166,7 @@ SYSIO_INTERFACE_NAME(open)(const char *path, int flags, ...)
 #endif
 	SYSIO_INTERFACE_ENTER(open, "%s%d%mZ", path, flags, mode);
 
+	CURVEFS_DPRINTF("1111111111111  open before _sysio_namei\n");
 	/*
 	 * Find the file.
 	 */
@@ -173,8 +174,13 @@ SYSIO_INTERFACE_NAME(open)(const char *path, int flags, ...)
 	INTENT_INIT(&intent, intent.int_opmask, &mode, &flags);
 	pno = NULL;
 	rtn = _sysio_namei(_sysio_cwd, path, ndflags, &intent, &pno);
+
+	CURVEFS_DPRINTF("1111111111111  open after _sysio_namei rtn=%d\n", rtn);
 	if (rtn)
 		goto error;
+
+	CURVEFS_DPRINTF("1111111111111  open after _sysio_namei\n");
+
 	/*
 	 * Ask for the open/creat.
 	 */
@@ -197,6 +203,8 @@ SYSIO_INTERFACE_NAME(open)(const char *path, int flags, ...)
 
 	FIL_PUT(fil);
 
+	CURVEFS_DPRINTF("1111111111111 open fil=%p rtn=%d\n", fil, rtn);
+	
 	SYSIO_INTERFACE_RETURN(rtn, 0, open, "%d", 0);
 
 error:

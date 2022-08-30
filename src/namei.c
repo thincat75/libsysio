@@ -41,6 +41,7 @@
  * lee@sandia.gov
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -90,6 +91,8 @@ lookup(struct pnode *parent,
 	int	err;
 	struct pnode *pno;
 
+	CURVEFS_DPRINTF("lookup parent=%p p_parent=%p dir=%d\n", parent, parent->p_parent, S_ISDIR(parent->p_base->pb_ino->i_stbuf.st_mode));
+
 	assert(parent != NULL &&
 	       parent->p_parent &&
 	       S_ISDIR(parent->p_base->pb_ino->i_stbuf.st_mode));
@@ -98,12 +101,12 @@ lookup(struct pnode *parent,
 	 * Sometimes we don't want to check permissions. At initialization
 	 * time, for instance.
 	 */
+	CURVEFS_DPRINTF("lookup  -------------------------------------- path=%s\n", path);
 	if (!(flags & ND_NOPERMCHECK)) {
 		err = _sysio_permitted(parent, X_OK);
 		if (err)
 			return err;
 	}
-
 	/*
 	 * Short-circuit `.' and `..'; We don't cache those.
 	 */
@@ -185,6 +188,7 @@ lookup(struct pnode *parent,
 		}
 	}
 
+	CURVEFS_DPRINTF("lookup come here --------------path=%s\n", path);
 	*pnop = pno;
 
 	/*
@@ -273,7 +277,7 @@ _sysio_path_walk(struct pnode *parent, struct nameidata *nd)
 		P_PUT(parent);
 		return err;
 	}
-
+	CURVEFS_DPRINTF("_sysio_path_walk after _sysio_p_validate\n");
 	/*
 	 * Prime everything for the loop. Will need another reference to the
 	 * initial directory. It'll be dropped later.
@@ -284,11 +288,13 @@ _sysio_path_walk(struct pnode *parent, struct nameidata *nd)
 	parent = NULL;
 	err = 0;
 	done = 0;
-
+	CURVEFS_DPRINTF("_sysio_path_walk after _sysio_next_component\n");
 	/*
 	 * Derecurse the path tree-walk.
 	 */
 	for (;;) {
+		CURVEFS_DPRINTF(" _sysio_path_walk into for pno=%p, ino=%p\n", nd->nd_pno, nd->nd_pno->p_base->pb_ino);
+		CURVEFS_DPRINTF(" _sysio_path_walk mode=%d flags=%d len=%ld\n", ino->i_stbuf.st_mode, nd->nd_flags, next.len);
 		ino = nd->nd_pno->p_base->pb_ino;
 		if (S_ISLNK(ino->i_stbuf.st_mode) &&
 		    (next.len || !(nd->nd_flags & ND_NOFOLLOW))) {
@@ -296,6 +302,7 @@ _sysio_path_walk(struct pnode *parent, struct nameidata *nd)
 			ssize_t	cc;
 			struct nameidata nameidata;
 
+			CURVEFS_DPRINTF(" _sysio_path_walk into if\n");
 			if (parent) {
 				P_PUT(parent);
 				parent = NULL;
@@ -314,6 +321,7 @@ _sysio_path_walk(struct pnode *parent, struct nameidata *nd)
 				err = -ENOMEM;
 				break;
 			}
+			CURVEFS_DPRINTF("before PNOP_READLINK\n");
 			cc = PNOP_READLINK(nd->nd_pno, lpath, MAXPATHLEN);
 			if (cc < 0) {
 				free(lpath);
@@ -357,6 +365,7 @@ _sysio_path_walk(struct pnode *parent, struct nameidata *nd)
 			struct mount *mnt;
 			struct pnode *pno;
 
+			CURVEFS_DPRINTF(" _sysio_path_walk into if elseif \n");
 			/*
 			 * Handle directories that hint they might
 			 * be automount-points.
@@ -424,6 +433,7 @@ _sysio_path_walk(struct pnode *parent, struct nameidata *nd)
 		}
 #endif
 
+		CURVEFS_DPRINTF("come here set up for next component path=%s\n", path);
 		/*
 		 * Set up for next component.
 		 */
@@ -442,12 +452,13 @@ _sysio_path_walk(struct pnode *parent, struct nameidata *nd)
 			break;
 		}
 		nd->nd_path = this.name + this.len;
+		CURVEFS_DPRINTF("come here set up for next component nd_path=%s\n ", nd->nd_path);
 		_sysio_next_component(nd->nd_path, &next);
 		if (parent)
 			P_PUT(parent);
 		parent = nd->nd_pno;
 		nd->nd_pno = NULL;
-
+		CURVEFS_DPRINTF("come here after _sysio_next_component\n");
 		/*
 		 * Parent must be a directory.
 		 */
@@ -455,7 +466,7 @@ _sysio_path_walk(struct pnode *parent, struct nameidata *nd)
 			err = -ENOTDIR;
 			break;
 		}
-
+		CURVEFS_DPRINTF("Parent must be a directory name=%s\n", this.name);
 		/*
 		 * The extra path arg is passed only on the first lookup in the
 		 * walk as we cross into each file system, anew. The intent is
@@ -505,6 +516,7 @@ _sysio_path_walk(struct pnode *parent, struct nameidata *nd)
 			else
 				break;
 		}
+		CURVEFS_DPRINTF("after Parent must be a directory\n");
 		path = NULL;				/* Stop that! */
 		/*
 		 * Next check requires no further locks. We are preventing
@@ -583,9 +595,12 @@ _sysio_namei(struct pnode *parent,
 {
 	struct nameidata nameidata;
 	int	err;
-
+	CURVEFS_DPRINTF ("_sysio_namei _sysio_root=%p path=%s nd_pno=%p\n", _sysio_root, path, nameidata.nd_pno);
 	ND_INIT(&nameidata, flags, path, _sysio_root, intnt);
 	err = _sysio_path_walk(parent, &nameidata);
+#if 0
+	CURVEFS_DPRINTF ("_sysio_namei nd_pno=%p pb=%p inode=%p\n", nameidata.nd_pno, nameidata.nd_pno->p_base, nameidata.nd_pno->p_base->pb_ino);
+#endif
 	if (!err)
 		*pnop = nameidata.nd_pno;
 	return err;

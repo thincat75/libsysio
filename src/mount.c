@@ -42,6 +42,7 @@ P_REF(mnt->mnt_covers);
  * lee@sandia.gov
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -372,11 +373,15 @@ _sysio_mount(struct pnode *cwd,
 	struct pnode *tocover;
 	struct mount *mnt;
 
+	CURVEFS_DPRINTF("into _sysio_mount\n");
+
 	/*
 	 * Look up the target path node.
 	 */
         INTENT_INIT(&intent, INT_GETATTR, NULL, NULL);
 	err = _sysio_namei(cwd, target, 0, &intent, &tocover);
+
+	CURVEFS_DPRINTF("after _sysio_namei\n");
 	if (err)
 		return err;
 
