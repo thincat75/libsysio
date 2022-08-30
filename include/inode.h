@@ -108,9 +108,9 @@ struct inode_ops {
 	int	(*inop_readlink)(struct pnode *pno, char *buf, size_t bufsiz);
 	int	(*inop_open)(struct pnode *pno, int flags, mode_t mode);
 	int	(*inop_close)(struct pnode *pno);
-	int	(*inop_link)(struct pnode *old, struct pnode *new);
+	int	(*inop_link)(struct pnode *old, struct pnode* _new);
 	int	(*inop_unlink)(struct pnode *pno);
-	int	(*inop_rename)(struct pnode *old, struct pnode *new);
+	int	(*inop_rename)(struct pnode *old, struct pnode* _new);
 	int	(*inop_read)(struct ioctx *ioctx);
 	int	(*inop_write)(struct ioctx *ioctx);
 	_SYSIO_OFF_T \
@@ -137,12 +137,32 @@ struct inode_ops {
 /*
  *Values for the mask to inop_setattr.
  */
+#if 0
 #define SETATTR_MODE		0x01
 #define SETATTR_MTIME		0x02
 #define SETATTR_ATIME		0x04
 #define SETATTR_UID		0x08
 #define SETATTR_GID		0x10
 #define SETATTR_LEN		0x20
+
+#define FUSE_SET_ATTR_MODE	(1 << 0)
+#define FUSE_SET_ATTR_UID	(1 << 1)
+#define FUSE_SET_ATTR_GID	(1 << 2)
+#define FUSE_SET_ATTR_SIZE	(1 << 3)
+#define FUSE_SET_ATTR_ATIME	(1 << 4)
+#define FUSE_SET_ATTR_MTIME	(1 << 5)
+#define FUSE_SET_ATTR_ATIME_NOW	(1 << 7)
+#define FUSE_SET_ATTR_MTIME_NOW	(1 << 8)
+#define FUSE_SET_ATTR_CTIME	(1 << 10)
+
+#endif
+
+#define SETATTR_MODE		(1 << 0)
+#define SETATTR_UID			(1 << 1)
+#define SETATTR_GID			(1 << 2)
+#define SETATTR_LEN			(1 << 3)
+#define SETATTR_ATIME		(1 << 4)
+#define SETATTR_MTIME		(1 << 5)
 
 /*
  *An i-node record is maintained for each file object in the system.
@@ -803,7 +823,7 @@ extern struct inode *_sysio_i_new(struct filesys *fs,
 				  struct intnl_stat *stat,
 				  unsigned immunity,
 				  struct inode_ops *ops,
-				  void *private);
+				  void* _private);
 extern struct inode *_sysio_i_find(struct filesys *fs,
 				   struct file_identifier *fid);
 extern void _sysio_i_gone(struct inode *ino);
@@ -839,12 +859,12 @@ extern ssize_t _sysio_p_filldirentries(struct pnode *pno,
 extern int _sysio_p_setattr(struct pnode *pno,
 			    unsigned mask,
 			    struct intnl_stat *stbuf);
-extern int _sysio_p_link(struct pnode *old, struct pnode *new);
+extern int _sysio_p_link(struct pnode *old, struct pnode* _new);
 extern int _sysio_p_unlink(struct pnode *pno);
-extern int _sysio_p_symlink(const char *oldpath, struct pnode *new);
+extern int _sysio_p_symlink(const char *oldpath, struct pnode* _new);
 extern int _sysio_p_rmdir(struct pnode *pno);
 extern ssize_t _sysio_p_readlink(struct pnode *pno, char *buf, size_t bufsiz);
-extern int _sysio_p_rename(struct pnode *old, struct pnode *new);
+extern int _sysio_p_rename(struct pnode *old, struct pnode* _new);
 extern int _sysio_p_iiox(int (*f)(struct ioctx *),
 			 struct pnode *pno,
 			 _SYSIO_OFF_T limit,

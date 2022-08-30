@@ -146,7 +146,7 @@ extern struct fsswent *_sysio_fssw_lookup(const char *name);
 extern int _sysio_fssw_register(const char *name, struct fssw_ops *ops);
 extern struct filesys * _sysio_fs_new(struct filesys_ops *ops,
 				      unsigned mask,
-				      void *private);
+				      void* _private);
 extern void _sysio_fs_gone(struct filesys *fs);
 #ifdef ZERO_SUM_MEMORY
 extern void _sysio_fssw_shutdown(void);

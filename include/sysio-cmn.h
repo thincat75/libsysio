@@ -41,6 +41,10 @@
  * lee@sandia.gov
  */
 
+#ifndef SYSIO_CMN_H_INCLUDE
+#define SYSIO_CMN_H_INCLUDE
+
+#include <stdio.h>
 #include "smp.h"
 
 /*
@@ -159,6 +163,21 @@ struct iovec;
 		return (rtn); \
 	} while(0) 
 
+//#define CURVEFS_SYSIO_TRACING
+#ifdef CURVEFS_SYSIO_TRACING 
+/* Trace print functions */
+#define CURVEFS_DPRINTF(fmt, ...)	\
+	do {							\
+		printf(" file=%s func=%s line=%d ", __FILE__, __func__, __LINE__);	\
+		printf(fmt, ##__VA_ARGS__);	\
+	} while (0)
+
+#else
+
+#define CURVEFS_DPRINTF(fmt, ...)						\
+	do { } while (0)
+
+#endif
 #ifdef SYSIO_TRACING
 
 #define SYSIO_TTAG(name) \
@@ -271,6 +290,16 @@ extern void _sysio_run_trace_q(void *q,
 			       const char *fmt,
 			       ...);
 
+#if 0
+/* Trace print functions */
+#define CURVEFS_DPRINTF(fmt, ...)	\
+	do {							\
+		printf(" file=%s func=%s line=%d ", __FILE__, __func__, __LINE__);	\
+		printf(fmt, ##__VA_ARGS__);	\
+	} while (0)
+
+#endif
+
 /* Trace enter/leave hook functions  */
 #define _SYSIO_TRACE_ENTER(tag, fmt, ...)				\
 	do { \
@@ -291,6 +320,11 @@ extern void _sysio_run_trace_q(void *q,
 	} while (0)
 
 #else /* !defined(SYSIO_TRACING) */
+#if 0
+#define CURVEFS_DPRINTF(fmt, ...)						\
+	do { } while (0)
+#endif
+
 #define _SYSIO_TRACE_ENTER(tag, fmt, ...)				\
 	do { } while (0)
 #define _SYSIO_TRACE_LEAVE(tag, fmt, ...)				\
@@ -352,3 +386,6 @@ extern ssize_t _sysio_doio(const struct intnl_xtvec *xtv, size_t xtvlen,
 			   const struct iovec *iov, size_t iovlen,
 			   ssize_t (*f)(void *, size_t, _SYSIO_OFF_T, void *),
 			   void *arg);
+
+
+#endif

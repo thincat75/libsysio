@@ -41,6 +41,9 @@
  * lee@sandia.gov
  */
 
+#ifndef SYSIO_H_INCLUDE
+#define SYSIO_H_INCLUDE
+
 /*
  * System IO common information.
  */
@@ -89,6 +92,7 @@ struct dirent;
  */
 #ifdef _LARGEFILE64_SOURCE
 #define intnl_stat stat64
+//#define intnl_stat stat
 #else
 #define intnl_stat stat
 #endif
@@ -280,8 +284,8 @@ extern struct dirent *SYSIO_INTERFACE_NAME(readdir)(DIR *dir);
 extern int SYSIO_INTERFACE_NAME(scandir)(const char *dir,
 					 struct dirent ***namelist,
 					 int(*filter)(const struct dirent *),
-					 int(*compar)(const dirent **,
-						      const dirent **));
+					 int(*compar)(const struct dirent **,
+						      const struct dirent **));
 #if defined(_BSD_SOURCE) || defined(_SVID_SOURCE)
 extern ssize_t SYSIO_INTERFACE_NAME(getdirentries)(int fd,
 						   char *buf,
@@ -291,3 +295,5 @@ extern ssize_t SYSIO_INTERFACE_NAME(getdirentries)(int fd,
 #endif /* _DECLARE_DIR_ACCESS */
 
 #undef _DECLARE_DIR_ACCESS
+
+#endif
