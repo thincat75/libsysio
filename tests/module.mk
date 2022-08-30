@@ -31,4 +31,8 @@ TESTS_EXTRA = \
 	tests/test_fhisymlink.c \
 	tests/test_fhitrunc.c \
 	tests/test_fhiunlink.c \
+	tests/curvefs_mount.cpp \
+	tests/curvefs_startup.cpp \
+	tests/curvefs_test.cpp \
+	tests/curvefs_test.h \
 	tests/Makefile.am tests/Makefile.in tests/module.mk
