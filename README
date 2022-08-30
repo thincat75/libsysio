@@ -64,3 +64,13 @@ The following works for me:
 export CFLAGS="-DREDSTORM -nostdinc -isystem /home/lee/REDSTORM/catamount/computeincs/i386 -isystem /home/lee/REDSTORM/catamount/include -g -W -Wall -ansi"
 
 sh configure --with-autmount=".mount" --with-native=yes --with-incore-yes --with-stdfd=yes --with-tests=yes
+
+/* just switch for debug include file sysio-cmn.h */
+#define CURVEFS_SYSIO_TRACING
+
+/* just switch for debug of ./test include file curvefs_test.h */
+#define CURVEFS_TEST_DEBUG
+
+/* switch for the poll */
+#define CURVEFS_SERVER_CO_POOL
+
