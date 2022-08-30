@@ -13,6 +13,7 @@ include $(top_srcdir)/dev/module.mk
 include $(top_srcdir)/dev/stdfd/module.mk 
 include $(top_srcdir)/drivers/incore/module.mk 
 include $(top_srcdir)/drivers/native/module.mk 
+include $(top_srcdir)/drivers/curvefs/module.mk 
 include $(top_srcdir)/misc/module.mk 
 
 lib_LIBRARIES = ${LIBBUILD_DIR}/libsysio.a
@@ -41,6 +42,13 @@ else
 OPTIONAL_NATIVE_SRCS =
 endif
 
+if WITH_CURVEFS_DRIVER
+OPTIONAL_CURVEFS_SRCS = $(CURVEFS_SRCS)
+else
+OPTIONAL_CURVEFS_SRCS =
+endif
+
+
 __LIBBUILD_DIR__libsysio_a_SOURCES = \
 	$(SRCDIR_SRCS) \
 	$(THREAD_MODEL_POSIX_SRCS) \
@@ -48,13 +56,14 @@ __LIBBUILD_DIR__libsysio_a_SOURCES = \
  	$(OPTIONAL_STDDEV_SRCS) \
 	$(OPTIONAL_STDFD_SRCS) \
 	$(OPTIONAL_INCORE_SRCS) \
-	$(OPTIONAL_NATIVE_SRCS) 
+	$(OPTIONAL_NATIVE_SRCS) \ 
+	$(OPTIONAL_CURVEFS_SRCS)
 
 include $(top_srcdir)/Rules.make
 
 EXTRA_DIST = Rules.make misc/init-env.sh $(TESTS_EXTRA) $(SRCDIR_EXTRA) \
-	$(INCLUDE_EXTRA) $(STDDEV_EXTRA) $(STDFD_EXTRA) $(INCORE_EXTRA) \
-	$(NATIVE_EXTRA) 
+	$(INCLUDE_EXTRA) $(STDDEV_EXTRA) $(STDFD_EXTRA) $(INCORE_EXTRA) \ 
+	$(NATIVE_EXTRA) $(CURVEFS_EXTRA) 
 
 really-clean: testsclean maintainer-clean
 	-rm -rf autom4te-2.53.cache

@@ -14,6 +14,7 @@ esac
 
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_PROG_CC
+AC_PROG_CXX
 AM_PROG_CC_C_O
 
 AC_PROG_RANLIB
@@ -60,6 +61,16 @@ AC_ARG_WITH(incore-driver,
 	esac],
   [with_incore_driver=yes])
 AM_CONDITIONAL(WITH_INCORE_DRIVER, test x$with_incore_driver = xyes)
+
+AC_ARG_WITH(curvefs_driver,
+  AC_HELP_STRING([--with-curvefs-driver],[build curvefs test driver]),
+  [	case "${withval}" in
+	 yes) ;;
+	 no) ;;
+	 *) AC_MSG_ERROR(bad value ${withval} for --with-curvefs-driver) ;;
+	esac;],
+  [with_curvefs_driver=yes;])
+AM_CONDITIONAL(WITH_CURVEFS_DRIVER, test x$with_curvefs_driver = xyes)
 
 AC_ARG_WITH(tests,
   AC_HELP_STRING([--with-tests],[build tests]),
